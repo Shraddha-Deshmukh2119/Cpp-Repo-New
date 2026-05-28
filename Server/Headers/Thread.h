@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <winsock2.h>  // FIX: Explicitly include winsock2.h first to define the SOCKET type
 #include <windows.h>
 
 #ifdef ONLINE_SHOPPING_UNIT_TEST
@@ -24,7 +25,7 @@ public:
     Thread(Server* server, int index)
     {
         data.server = server;
-        data.index = index;;
+        data.index = index; // Fixed a minor stray double semicolon here
     }
 
     void create();
