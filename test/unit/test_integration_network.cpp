@@ -1,5 +1,6 @@
 #include <atomic>
 #include <chrono>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <thread>
@@ -66,6 +67,9 @@ TEST(NetworkIntegration, ServerGetActivityThroughThread)
     ASSERT_TRUE(server.start());
 
     {
+        std::error_code ec;
+        // Ensure this path is a file (not a directory leftover from other tests/runs).
+        std::filesystem::remove_all("clients.txt", ec);
         std::ofstream file("clients.txt");
         file << "Client connected test line\n";
     }

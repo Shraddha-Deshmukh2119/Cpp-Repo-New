@@ -324,6 +324,13 @@ void Person::buy(const string& fileName)
     bool go = true;
     double Balance;
 
+    // #region agent log
+    {
+        std::ofstream log("C:\\Users\\shraddha\\OneDrive\\Desktop\\test\\debug-206870.log", std::ios::app);
+        log << "{\"sessionId\":\"206870\",\"runId\":\"pre-fix-1\",\"hypothesisId\":\"H1\",\"location\":\"Person.cpp:buy:entry\",\"message\":\"enter buy\",\"data\":{\"fileName\":\"" << fileName << "\"},\"timestamp\":" << std::time(nullptr) << "}" << std::endl;
+    }
+    // #endregion
+
     // Initializing
     if (!initialize_goods(goods) || !initialize_balance(fileName) || !initialize_cash(cash))
     {
@@ -347,6 +354,13 @@ void Person::buy(const string& fileName)
         (*server).Rec(str1);
         ans = stoi(str1);
 
+        // #region agent log
+        {
+            std::ofstream log("C:\\Users\\shraddha\\OneDrive\\Desktop\\test\\debug-206870.log", std::ios::app);
+            log << "{\"sessionId\":\"206870\",\"runId\":\"pre-fix-1\",\"hypothesisId\":\"H2\",\"location\":\"Person.cpp:buy:switch\",\"message\":\"switch choice\",\"data\":{\"ans\":" << ans << "},\"timestamp\":" << std::time(nullptr) << "}" << std::endl;
+        }
+        // #endregion
+
         switch(ans)
         {
             case 1:
@@ -358,7 +372,16 @@ void Person::buy(const string& fileName)
                 quantity = stoi(str3);
     
                 if (quantity > goods[itemNo - 1].stock)
+                {
+                    // #region agent log
+                    {
+                        std::ofstream log("C:\\Users\\shraddha\\OneDrive\\Desktop\\test\\debug-206870.log", std::ios::app);
+                        log << "{\"sessionId\":\"206870\",\"runId\":\"pre-fix-1\",\"hypothesisId\":\"H3\",\"location\":\"Person.cpp:buy:case1\",\"message\":\"not enough stock\""
+                            << ",\"data\":{\"itemNo\":" << itemNo << ",\"quantity\":" << quantity << "},\"timestamp\":" << std::time(nullptr) << "}" << std::endl;
+                    }
+                    // #endregion
                     (*server).Send("NOT-ENOUGH");
+                }
                 else
                 {
                     (*server).Send("ENOUGH");
@@ -387,16 +410,39 @@ void Person::buy(const string& fileName)
 
                 ss.str("");
                 if (!order)
+                {
+                    // #region agent log
+                    {
+                        std::ofstream log("C:\\Users\\shraddha\\OneDrive\\Desktop\\test\\debug-206870.log", std::ios::app);
+                        log << "{\"sessionId\":\"206870\",\"runId\":\"pre-fix-1\",\"hypothesisId\":\"H4\",\"location\":\"Person.cpp:buy:case2\",\"message\":\"no order placed\",\"data\":{},\"timestamp\":" << std::time(nullptr) << "}" << std::endl;
+                    }
+                    // #endregion
                     ss << "NO-ORDER";
+                }
                 else
                 {
                     if (ordercost > Balance) // Display error if cost exceeds balance
                     {
+                        // #region agent log
+                        {
+                            std::ofstream log("C:\\Users\\shraddha\\OneDrive\\Desktop\\test\\debug-206870.log", std::ios::app);
+                            log << "{\"sessionId\":\"206870\",\"runId\":\"pre-fix-1\",\"hypothesisId\":\"H5\",\"location\":\"Person.cpp:buy:case2\",\"message\":\"ordercost exceeds balance\""
+                                << ",\"data\":{\"ordercost\":" << ordercost << ",\"balance\":" << Balance << "},\"timestamp\":" << std::time(nullptr) << "}" << std::endl;
+                        }
+                        // #endregion
                         ss  << "Your balance: $" << balance << endl 
                             << "Cost of the order: $" << ordercost << endl;
                     }
                     else
                     {
+                        // #region agent log
+                        {
+                            std::ofstream log("C:\\Users\\shraddha\\OneDrive\\Desktop\\test\\debug-206870.log", std::ios::app);
+                            log << "{\"sessionId\":\"206870\",\"runId\":\"pre-fix-1\",\"hypothesisId\":\"H6\",\"location\":\"Person.cpp:buy:case2\",\"message\":\"successful order and potential reorder\""
+                                << ",\"data\":{\"ordercost\":" << ordercost << ",\"balance\":" << Balance << "},\"timestamp\":" << std::time(nullptr) << "}" << std::endl;
+                        }
+                        // #endregion
+
                         Balance -= ordercost; // Deducting balance
                         this->balance = to_string(Balance);
                         cash + ordercost; // Increasing cash
