@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(OnlineShoppingTests CXX)
 
+# FIX: Suppress Winsock2 vs Windows.h conflict warning globally across all binaries
+add_compile_definitions(WIN32_LEAN_AND_MEAN)
+
 set(GTEST_ROOT "${CMAKE_BINARY_DIR}/_deps/googletest-src")
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
@@ -22,7 +25,7 @@ add_library(oss_test_support STATIC
     support/test_runtime.cpp
 )
 
-# FIX: Link GTest to the static library so test_fixture.cpp can find <gtest/gtest.h>
+# Link GTest to the static library so test_fixture.cpp can find <gtest/gtest.h>
 target_link_libraries(oss_test_support PRIVATE 
     GTest::gtest
 )
