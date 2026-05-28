@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.14)
+project(OnlineShoppingTests CXX)
+
 set(GTEST_ROOT "${CMAKE_BINARY_DIR}/_deps/googletest-src")
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
@@ -13,15 +16,24 @@ else()
     FetchContent_MakeAvailable(googletest)
 endif()
 
+# Define the helper/support library target
 add_library(oss_test_support STATIC
     support/test_fixture.cpp
     support/test_runtime.cpp
 )
+
+# FIX: Link GTest to the static library so test_fixture.cpp can find <gtest/gtest.h>
+target_link_libraries(oss_test_support PRIVATE 
+    GTest::gtest
+)
+
 target_include_directories(oss_test_support PRIVATE
     ${CMAKE_SOURCE_DIR}/Server
     ${CMAKE_SOURCE_DIR}/Server/Headers
 )
 target_compile_definitions(oss_test_support PRIVATE ONLINE_SHOPPING_UNIT_TEST)
+
+# --- Source File Specifications ---
 
 set(CLIENT_PROD_SOURCES
     ${CMAKE_SOURCE_DIR}/Client/Headers/Client.cpp
@@ -68,6 +80,8 @@ set(TEST_SERVER_SOURCES
     unit/test_coverage_expansion.cpp
 )
 
+# --- testClient Executable ---
+
 add_executable(testClient ${TEST_CLIENT_SOURCES} ${CLIENT_PROD_SOURCES} ${SERVER_PROD_SOURCES})
 target_include_directories(testClient PRIVATE
     ${CMAKE_SOURCE_DIR}/Server
@@ -89,6 +103,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 add_test(NAME testClient COMMAND testClient)
+
+# --- testServer Executable ---
 
 add_executable(testServer ${TEST_SERVER_SOURCES} ${SERVER_PROD_SOURCES} ${CLIENT_PROD_SOURCES})
 
@@ -118,6 +134,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 add_test(NAME testServer COMMAND testServer)
+
+# --- Coverage Target ---
 
 if(ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_custom_target(coverage
