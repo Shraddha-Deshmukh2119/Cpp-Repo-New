@@ -16,27 +16,10 @@ endif()
 if(BUILD_APPS)
     add_executable(client_app Client/clientProgram.cpp)
     target_include_directories(client_app PRIVATE Client Client/Headers)
-    target_sources(client_app PRIVATE
-        Client/Headers/Client.cpp
-        Client/Headers/Person.cpp
-        Client/Headers/Customer.cpp
-        Client/Headers/Employee.cpp
-        Client/Headers/Admin.cpp
-    )
     target_link_libraries(client_app PRIVATE ws2_32)
 
     add_executable(server_app Server/serverProgram.cpp)
     target_include_directories(server_app PRIVATE Server Server/Headers)
-    target_sources(server_app PRIVATE
-        Server/Headers/Server.cpp
-        Server/Headers/Thread.cpp
-        Server/Headers/Person.cpp
-        Server/Headers/Customer.cpp
-        Server/Headers/Employee.cpp
-        Server/Headers/Admin.cpp
-        Server/Headers/Complaint_Base.cpp
-        Server/Headers/Complaint_E.cpp
-    )
     target_link_libraries(server_app PRIVATE ws2_32)
 endif()
 
